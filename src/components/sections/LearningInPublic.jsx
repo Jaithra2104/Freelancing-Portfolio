@@ -39,7 +39,7 @@ const LearningInPublic = () => {
   });
 
   const [calendar, setCalendar] = useState({
-    streak: 0,
+    streak: 43,
     totalActiveDays: 0,
     submissionCalendar: '{}',
     loading: true,
@@ -78,7 +78,7 @@ const LearningInPublic = () => {
       .then((data) => {
         if (data && !data.errors) {
           setCalendar({
-            streak: data.streak || 0,
+            streak: 43, // Overridden to match real active login streak shown in profile (public API only returns max submission streak of 12)
             totalActiveDays: data.totalActiveDays || 0,
             submissionCalendar: data.submissionCalendar || '{}',
             loading: false,
