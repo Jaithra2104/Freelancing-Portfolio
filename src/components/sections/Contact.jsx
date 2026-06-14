@@ -23,10 +23,46 @@ const Contact = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setStatus('loading');
-    // Simulate a form submission delay
-    await new Promise((r) => setTimeout(r, 1800));
-    setStatus('success');
-    setForm({ name: '', email: '', subject: '', message: '' });
+
+    const accessKey = import.meta.env.VITE_WEB3FORMS_KEY;
+
+    if (!accessKey) {
+      // Fallback: Simulate submission if environment key is not configured yet
+      await new Promise((r) => setTimeout(r, 1500));
+      setStatus('success');
+      setForm({ name: '', email: '', subject: '', message: '' });
+      setTimeout(() => setStatus('idle'), 4000);
+      return;
+    }
+
+    try {
+      const response = await fetch('https://api.web3forms.com/submit', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json'
+        },
+        body: JSON.stringify({
+          access_key: accessKey,
+          name: form.name,
+          email: form.email,
+          subject: form.subject,
+          message: `${form.message}\n\nContact Email: ${form.email}`,
+        })
+      });
+
+      const result = await response.json();
+      if (result.success) {
+        setStatus('success');
+        setForm({ name: '', email: '', subject: '', message: '' });
+      } else {
+        setStatus('error');
+      }
+    } catch (error) {
+      console.error('Contact submission error:', error);
+      setStatus('error');
+    }
+
     setTimeout(() => setStatus('idle'), 4000);
   };
 
