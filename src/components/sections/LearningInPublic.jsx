@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import SectionHeader from '../ui/SectionHeader';
-import { FiGithub, FiEdit3, FiCode, FiActivity } from 'react-icons/fi';
+import { FiGithub, FiEdit3, FiCode, FiActivity, FiGrid } from 'react-icons/fi';
 
 const containerVariants = {
   hidden: {},
@@ -38,7 +38,20 @@ const LearningInPublic = () => {
     loading: true,
   });
 
+  const [calendar, setCalendar] = useState({
+    streak: 0,
+    totalActiveDays: 0,
+    submissionCalendar: '{}',
+    loading: true,
+  });
+
+  const [languages, setLanguages] = useState({
+    list: [],
+    loading: true,
+  });
+
   useEffect(() => {
+    // Solved questions count
     fetch('https://alfa-leetcode-api.onrender.com/jaithra2106/solved')
       .then((res) => res.json())
       .then((data) => {
@@ -55,10 +68,101 @@ const LearningInPublic = () => {
         }
       })
       .catch((err) => {
-        console.error('Leetcode API error:', err);
+        console.error('Leetcode Solved API error:', err);
         setLeetcode((prev) => ({ ...prev, loading: false }));
       });
+
+    // Calendar heatmap
+    fetch('https://alfa-leetcode-api.onrender.com/jaithra2106/calendar')
+      .then((res) => res.json())
+      .then((data) => {
+        if (data && !data.errors) {
+          setCalendar({
+            streak: data.streak || 0,
+            totalActiveDays: data.totalActiveDays || 0,
+            submissionCalendar: data.submissionCalendar || '{}',
+            loading: false,
+          });
+        } else {
+          setCalendar((prev) => ({ ...prev, loading: false }));
+        }
+      })
+      .catch((err) => {
+        console.error('Leetcode Calendar API error:', err);
+        setCalendar((prev) => ({ ...prev, loading: false }));
+      });
+
+    // Language list
+    fetch('https://alfa-leetcode-api.onrender.com/jaithra2106/language')
+      .then((res) => res.json())
+      .then((data) => {
+        if (data && data.languageProblemCount) {
+          // Sort languages by solved count descending
+          const sorted = [...data.languageProblemCount].sort((a, b) => b.problemsSolved - a.problemsSolved);
+          setLanguages({
+            list: sorted,
+            loading: false,
+          });
+        } else {
+          setLanguages((prev) => ({ ...prev, loading: false }));
+        }
+      })
+      .catch((err) => {
+        console.error('Leetcode Language API error:', err);
+        setLanguages((prev) => ({ ...prev, loading: false }));
+      });
   }, []);
+
+  const getLeetcodeIntensityClass = (count) => {
+    if (count === 0) return 'bg-white/[0.02] border border-white/[0.04]';
+    if (count <= 2) return 'bg-amber-600/20 border border-amber-500/20';
+    if (count <= 5) return 'bg-amber-500/40 border border-amber-400/30';
+    if (count <= 9) return 'bg-amber-500/70 border border-amber-400/50';
+    return 'bg-amber-400 border border-amber-300 shadow-[0_0_8px_rgba(245,158,11,0.5)]';
+  };
+
+  const generateLeetcodeGrid = () => {
+    const today = new Date();
+    const todayDayOfWeek = today.getDay(); // 0 to 6
+    
+    // We want 18 columns. Each column is a week of 7 days (Sunday to Saturday)
+    const startDate = new Date();
+    startDate.setDate(today.getDate() - 126 - todayDayOfWeek);
+    startDate.setHours(0, 0, 0, 0);
+
+    const getEpochDay = (d) => Math.floor(d.getTime() / (1000 * 60 * 60 * 24));
+    
+    const calendarMap = {};
+    try {
+      const rawCal = JSON.parse(calendar.submissionCalendar);
+      Object.keys(rawCal).forEach((ts) => {
+        const d = new Date(parseInt(ts) * 1000);
+        calendarMap[getEpochDay(d)] = rawCal[ts];
+      });
+    } catch (e) {
+      // ignore
+    }
+
+    const grid = [];
+    for (let r = 0; r < 7; r++) {
+      const row = [];
+      for (let c = 0; c < 18; c++) {
+        const dayIndex = c * 7 + r;
+        const currentDate = new Date(startDate);
+        currentDate.setDate(startDate.getDate() + dayIndex);
+        
+        const cellEpochDay = getEpochDay(currentDate);
+        const count = calendarMap[cellEpochDay] || 0;
+        
+        row.push({
+          date: currentDate,
+          count,
+        });
+      }
+      grid.push(row);
+    }
+    return grid;
+  };
 
   const getIntensityClass = (level) => {
     switch (level) {
@@ -290,6 +394,118 @@ const LearningInPublic = () => {
 
             <div className="mt-5 pt-3 border-t border-white/[0.04] text-[9px] font-mono text-text-muted flex justify-between">
               <span>Goal: 230+ Solved</span>
+              <span>Updated Live</span>
+            </div>
+          </motion.a>
+
+          {/* Card 4: LeetCode Submission Calendar & Language breakdown */}
+          <motion.a
+            href="https://leetcode.com/u/jaithra2106/"
+            target="_blank"
+            rel="noopener noreferrer"
+            variants={cardVariants}
+            className="lg:col-span-2 glass-card rounded-2xl p-5 border border-white/[0.06] flex flex-col justify-between hover:border-accent/40 transition-colors group cursor-pointer"
+          >
+            <div>
+              <div className="flex items-center gap-2 mb-4">
+                <FiGrid className="text-amber-500" size={16} />
+                <h3 className="font-display font-bold text-sm text-text-primary group-hover:text-accent-light transition-colors">
+                  LeetCode Submissions Calendar
+                </h3>
+                <span className="text-[10px] text-text-muted opacity-0 group-hover:opacity-100 transition-opacity">↗</span>
+                <span className="ml-auto text-[10px] font-mono px-2 py-0.5 rounded-full bg-amber-500/10 text-amber-400 border border-amber-500/20 font-bold animate-pulse">
+                  Live Orange Heatmap
+                </span>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-5 gap-6">
+                {/* Heatmap Grid */}
+                <div className="md:col-span-3">
+                  <p className="text-text-secondary text-[11px] leading-relaxed mb-4">
+                    Daily problem-solving consistency graph synced directly from LeetCode.
+                  </p>
+
+                  {calendar.loading ? (
+                    <div className="h-[120px] flex items-center justify-center text-text-muted font-mono text-xs animate-pulse">
+                      Fetching calendar submissions...
+                    </div>
+                  ) : (
+                    <div className="overflow-x-auto pb-2 scrollbar-thin mt-2">
+                      <div className="min-w-[340px] flex flex-col gap-1">
+                        {generateLeetcodeGrid().map((row, rIdx) => (
+                          <div key={rIdx} className="flex gap-1">
+                            {row.map((cell, cIdx) => (
+                              <div
+                                key={cIdx}
+                                title={`${cell.date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}: ${cell.count} submissions`}
+                                className={`w-3.5 h-3.5 rounded-sm transition-all duration-300 ${getLeetcodeIntensityClass(cell.count)}`}
+                              />
+                            ))}
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  <div className="flex items-center gap-4 text-[10px] font-mono text-text-secondary mt-5 pt-3 border-t border-white/[0.04]">
+                    <div className="flex items-center gap-1">
+                      <span>Less</span>
+                      <div className="w-2 h-2 rounded-sm bg-white/[0.02] border border-white/[0.04]" />
+                      <div className="w-2 h-2 rounded-sm bg-amber-600/20 border border-amber-500/20" />
+                      <div className="w-2 h-2 rounded-sm bg-amber-500/40 border border-amber-400/30" />
+                      <div className="w-2 h-2 rounded-sm bg-amber-500/70 border border-amber-400/50" />
+                      <div className="w-2 h-2 rounded-sm bg-amber-400 border border-amber-300" />
+                      <span>More</span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Types of Problems / Languages Solved */}
+                <div className="md:col-span-2 flex flex-col justify-between">
+                  <div>
+                    <h4 className="font-display font-semibold text-xs text-text-primary mb-3">
+                      Problems by Language
+                    </h4>
+                    {languages.loading ? (
+                      <div className="space-y-3 animate-pulse">
+                        <div className="h-4 bg-white/5 rounded w-3/4" />
+                        <div className="h-4 bg-white/5 rounded w-1/2" />
+                        <div className="h-4 bg-white/5 rounded w-5/6" />
+                      </div>
+                    ) : (
+                      <div className="space-y-3.5">
+                        {languages.list.slice(0, 4).map((lang, idx) => {
+                          const totalLangSolved = languages.list.reduce((sum, item) => sum + item.problemsSolved, 0);
+                          const pct = totalLangSolved > 0 ? (lang.problemsSolved / totalLangSolved) * 100 : 0;
+                          return (
+                            <div key={idx}>
+                              <div className="flex justify-between text-[10px] font-mono mb-1 text-text-secondary">
+                                <span>{lang.languageName}</span>
+                                <span>{lang.problemsSolved} Solved</span>
+                              </div>
+                              <div className="h-1.5 w-full bg-white/[0.03] rounded-full overflow-hidden border border-white/[0.04]">
+                                <div
+                                  className="h-full bg-gradient-to-r from-amber-500 to-amber-600 rounded-full"
+                                  style={{ width: `${pct}%` }}
+                                />
+                              </div>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div className="mt-5 pt-3 border-t border-white/[0.04] text-[9px] font-mono text-text-muted flex justify-between w-full">
+              <span className="flex items-center gap-1">
+                Active Days: <span className="font-bold text-text-primary">{calendar.totalActiveDays}</span>
+              </span>
+              <span className="flex items-center gap-1">
+                Streak: <span className="font-bold text-text-primary">{calendar.streak} days</span>
+              </span>
               <span>Updated Live</span>
             </div>
           </motion.a>
