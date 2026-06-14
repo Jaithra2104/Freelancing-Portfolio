@@ -1,5 +1,6 @@
 import { motion } from 'framer-motion';
 import { FiGithub, FiLinkedin, FiMail, FiArrowUp } from 'react-icons/fi';
+import { SiLeetcode } from 'react-icons/si';
 
 const footerLinks = [
   { label: 'About', href: '#about' },
@@ -13,6 +14,7 @@ const footerLinks = [
 const socialLinks = [
   { icon: FiGithub, href: 'https://github.com/Jaithra2104', label: 'GitHub' },
   { icon: FiLinkedin, href: 'https://www.linkedin.com/in/jaithra-addepalli-510292334', label: 'LinkedIn' },
+  { icon: SiLeetcode, href: 'https://leetcode.com/u/jaithra2106/', label: 'LeetCode' },
   { icon: FiMail, href: 'mailto:jaithraaddepalli17@gmail.com', label: 'Email' },
 ];
 

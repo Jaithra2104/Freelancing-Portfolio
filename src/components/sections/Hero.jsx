@@ -1,11 +1,12 @@
 import { motion, useMotionValue, useTransform, useSpring } from 'framer-motion';
 import { TypeAnimation } from 'react-type-animation';
 import { FiGithub, FiLinkedin, FiMail, FiArrowDown, FiDownload, FiZap } from 'react-icons/fi';
-import { SiPython, SiReact, SiFlask, SiOpenai, SiQiskit } from 'react-icons/si';
+import { SiPython, SiReact, SiFlask, SiOpenai, SiQiskit, SiLeetcode } from 'react-icons/si';
 
 const socialLinks = [
   { icon: FiGithub, href: 'https://github.com/Jaithra2104', label: 'GitHub' },
   { icon: FiLinkedin, href: 'https://www.linkedin.com/in/jaithra-addepalli-510292334', label: 'LinkedIn' },
+  { icon: SiLeetcode, href: 'https://leetcode.com/u/jaithra2106/', label: 'LeetCode' },
   { icon: FiMail, href: 'mailto:jaithraaddepalli17@gmail.com', label: 'Email' },
 ];
 

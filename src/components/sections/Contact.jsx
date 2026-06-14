@@ -6,9 +6,12 @@ import {
   FiSend, FiCheck, FiAlertCircle,
 } from 'react-icons/fi';
 
+import { SiLeetcode } from 'react-icons/si';
+
 const socialLinks = [
   { icon: FiGithub, href: 'https://github.com/Jaithra2104', label: 'GitHub', username: 'github.com/Jaithra2104' },
   { icon: FiLinkedin, href: 'https://www.linkedin.com/in/jaithra-addepalli-510292334', label: 'LinkedIn', username: 'linkedin.com/in/jaithra-addepalli-510292334' },
+  { icon: SiLeetcode, href: 'https://leetcode.com/u/jaithra2106/', label: 'LeetCode', username: 'leetcode.com/u/jaithra2106' },
   { icon: FiMail, href: 'mailto:jaithraaddepalli17@gmail.com', label: 'Email', username: 'jaithraaddepalli17@gmail.com' },
 ];
 
