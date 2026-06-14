@@ -26,7 +26,7 @@ export const projects = [
     status: "Active Prototype",
     timeline: "2024 • 4 Weeks",
     metrics: "12+ Workflows",
-    video: "/videos/friday_demo.mp4",
+    video: "https://res.cloudinary.com/dm5bqzas3/video/upload/v1781463019/Screen_Recording_2026-06-14_232741_1_uvgvcb.mp4",
     screenshots: [
       "/images/friday_1.png",
       "/images/friday_2.png",
@@ -61,7 +61,7 @@ export const projects = [
     status: "Completed",
     timeline: "2024 • 6 Weeks",
     metrics: "500+ Active Tasks",
-    video: "/videos/taskora_demo.mp4",
+    video: "https://res.cloudinary.com/dm5bqzas3/video/upload/v1781462601/Screen_Recording_2026-06-14_194205_vawdii.mp4",
     screenshots: [
       "/images/taskora_1.png",
       "/images/taskora_2.png",
@@ -96,7 +96,7 @@ export const projects = [
     status: "Deployed",
     timeline: "2023 • 5 Weeks",
     metrics: "98% Prediction Match",
-    video: "/videos/college_predictor_demo.mp4",
+    video: "https://res.cloudinary.com/dm5bqzas3/video/upload/v1781462820/Screen_Recording_2026-06-14_195905_zafjep.mp4",
     screenshots: [
       "/images/college_predictor_1.png",
       "/images/college_predictor_2.png",
